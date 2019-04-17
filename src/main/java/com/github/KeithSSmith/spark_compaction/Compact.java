@@ -17,7 +17,7 @@ import org.apache.hadoop.io.compress.CompressionCodecFactory;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.SQLContext;
 
 public class Compact {
@@ -180,13 +180,13 @@ public class Compact {
             textFile.coalesce(this.splitSize).saveAsTextFile(outputPath);
         } else if (this.outputSerialization.equals(PARQUET)) {
             SQLContext sqlContext = new SQLContext(sc);
-            DataFrame parquetFile = sqlContext.read().parquet(this.concatInputPath(inputPath));
+            Dataset parquetFile = sqlContext.read().parquet(this.concatInputPath(inputPath));
             parquetFile.coalesce(this.splitSize).write().parquet(outputPath);
         } else if (this.outputSerialization.equals(AVRO)) {
             // For this to work the files must end in .avro
         	// Another issue is that when using compression the compression codec extension is not being added to the file name.
             SQLContext sqlContext = new SQLContext(sc);
-            DataFrame avroFile = sqlContext.read().format("com.databricks.spark.avro").load(this.concatInputPath(inputPath));
+            Dataset avroFile = sqlContext.read().format("com.databricks.spark.avro").load(this.concatInputPath(inputPath));
             avroFile.coalesce(this.splitSize).write().format("com.databricks.spark.avro").save(outputPath);
         } else {
             System.out.println("Did not match any serialization type: text, parquet, or avro.  Recieved: " +
@@ -207,12 +207,12 @@ public class Compact {
             textFile.coalesce(this.splitSize).saveAsTextFile(outputPath);
         } else if (this.outputSerialization.equals(PARQUET)) {
             SQLContext sqlContext = new SQLContext(sc);
-            DataFrame parquetFile = sqlContext.read().parquet(this.concatInputPath(inputPath));
+            Dataset parquetFile = sqlContext.read().parquet(this.concatInputPath(inputPath));
             parquetFile.coalesce(this.splitSize).write().parquet(outputPath);
         } else if (this.outputSerialization.equals(AVRO)) {
             // For this to work the files must end in .avro
             SQLContext sqlContext = new SQLContext(sc);
-            DataFrame avroFile = sqlContext.read().format("com.databricks.spark.avro").load(this.concatInputPath(inputPath));
+            Dataset avroFile = sqlContext.read().format("com.databricks.spark.avro").load(this.concatInputPath(inputPath));
             avroFile.coalesce(this.splitSize).write().format("com.databricks.spark.avro").save(outputPath);
         } else {
             System.out.println("Did not match any serialization type: text, parquet, or avro.  Recieved: " +
